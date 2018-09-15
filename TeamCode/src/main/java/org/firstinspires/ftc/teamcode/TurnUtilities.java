@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.sun.tools.javac.tree.DCTree;
+import com.sun.tools.javac.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
  * Summary: This class stores functions for turning the robot.
  */
 public class TurnUtilities {
-
+    private static final String TAG = "message";
 
     /**
      * @param goalAngle   desired position angle for turning
@@ -34,17 +35,15 @@ public class TurnUtilities {
             } else if (currentAngle > 0) {
                 sideOfTurn = true;    //clockwise
             }
-        }
-       else if (currentAngle <= 0 && goalAngle < 0 &&
-              currentAngle < goalAngle) {
+        } else if (currentAngle <= 0 && goalAngle < 0 &&
+                currentAngle < goalAngle) {
             sideOfTurn = false;     //counter-clockwise
 
         } else if (currentAngle <= 0 && goalAngle < 0
                 && currentAngle > goalAngle) {
             sideOfTurn = true;    //clockwise
 
-        }
-       else if (currentAngle >= 0 && goalAngle > 0 &&
+        } else if (currentAngle >= 0 && goalAngle > 0 &&
                 currentAngle < goalAngle)
 
         {
@@ -58,7 +57,7 @@ public class TurnUtilities {
 
         {
             if (currentAngle - goalAngle >
-                    360 -( currentAngle -goalAngle)) {
+                    360 - (currentAngle - goalAngle)) {
                 sideOfTurn = false;    //counter-clockwise
             } else {
                 sideOfTurn = true;    //clockwise
@@ -66,14 +65,15 @@ public class TurnUtilities {
         } else if (currentAngle <= 0 && goalAngle > 0)
 
         {
-            if (goalAngle-currentAngle <
-                    360 -(goalAngle-currentAngle)) {
+            if (goalAngle - currentAngle <
+                    360 - (goalAngle - currentAngle)) {
                 sideOfTurn = false;    //counter-clockwise
             } else {
                 sideOfTurn = true;    //clockwise
             }
 
         }
+        android.util.Log.d(TAG,"Turn direction: "+sideOfTurn);
         if (sideOfTurn) {
             setMotorPower(driveMotors, new double[][]{{power, -power}, {power, -power}});
             if (goalAngle > 0 && currentAngle < 0)
