@@ -76,8 +76,7 @@ public class TurnUtilities {
         android.util.Log.d(TAG,"Turn direction: "+sideOfTurn);
         if (sideOfTurn) {
             setMotorPower(driveMotors, new double[][]{{power, -power}, {power, -power}});
-            if (goalAngle > 0 && currentAngle < 0)
-
+            if (goalAngle > 0 && currentAngle < 0)//edge case
                 while (goalAngle > currentAngle) {
                     currentAngle = imu.getAngularOrientation(AxesReference.INTRINSIC,
                             AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
@@ -100,7 +99,7 @@ public class TurnUtilities {
             }
         } else {
             setMotorPower(driveMotors, new double[][]{{-power, power}, {-power, power}});
-            if (goalAngle < 0 && currentAngle > 0)
+            if (goalAngle < 0 && currentAngle > 0) //edge case
                 while (goalAngle < currentAngle) {
                     currentAngle = imu.getAngularOrientation(AxesReference.INTRINSIC,
                             AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
@@ -108,6 +107,7 @@ public class TurnUtilities {
                     telemetry.update();
                 }
                 //motors running
+
 
             else
                 while (goalAngle > currentAngle) {
