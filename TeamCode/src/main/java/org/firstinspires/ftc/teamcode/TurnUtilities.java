@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.provider.BaseColumns;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -73,7 +75,7 @@ public class TurnUtilities {
             }
 
         }
-        android.util.Log.d(TAG,"Turn direction: "+sideOfTurn);
+        android.util.Log.d(TAG, "Turn direction: " + sideOfTurn);
         if (sideOfTurn) {
             setMotorPower(driveMotors, new double[][]{{power, -power}, {power, -power}});
             if (goalAngle > 0 && currentAngle < 0)//edge case
@@ -122,9 +124,76 @@ public class TurnUtilities {
         setMotorPower(driveMotors, new double[][]{{0, 0}, {0, 0}});
     }
 
+    public static void ScaledTurn(double goalAngle, DcMotor[][] driveMotors, BNO055IMU imu, double power, Telemetry telemetry) {
+        boolean sideOfTurn = true;
+        double currentAngle = getCurrentScaledAngle(imu);
+        if (currentAngle < goalAngle) {
+            if (goalAngle - currentAngle <= 360 - (goalAngle - currentAngle))
+                sideOfTurn = false;
+            else
+                sideOfTurn = true;
+
+        } else {
+            if (currentAngle - goalAngle <= 360 - (currentAngle - goalAngle))
+                sideOfTurn = true;
+            else
+                sideOfTurn = false;
+        }
+        if (sideOfTurn) {
+            setMotorPower(driveMotors, new double[][]{{power, -power}, {power, -power}});
+            if (goalAngle > 180 && currentAngle < 180)//edge case
+                while (goalAngle > currentAngle) {
+                    currentAngle = getCurrentScaledAngle(imu);
+                    telemetry.addData("angle:", currentAngle);
+                    telemetry.update();
+                }
+                //motors running
+
+            else {
+
+                while (goalAngle < currentAngle) {
+                    currentAngle = getCurrentScaledAngle(imu);
+                    telemetry.addData("angle:", currentAngle);
+                    telemetry.update();
+                }
+
+                //motors running
+
+            }
+        } else {
+            setMotorPower(driveMotors, new double[][]{{-power, power}, {-power, power}});
+            if (goalAngle < 180 && currentAngle > 180) //edge case
+                while (goalAngle < currentAngle) {
+                    currentAngle = getCurrentScaledAngle(imu);
+                    telemetry.addData("angle:", currentAngle);
+                    telemetry.update();
+                }
+                //motors running
+
+
+            else
+                while (goalAngle > currentAngle) {
+                    currentAngle = getCurrentScaledAngle(imu);
+                    telemetry.addData("angle:", currentAngle);
+                    telemetry.update();
+                }
+            //motors running
+
+        }
+        setMotorPower(driveMotors, new double[][]{{0, 0}, {0, 0}});
+    }
+
     private static void setMotorPower(DcMotor[][] motors, double[][] powers) {
         for (int i = 0; i < motors.length; i++)
             for (int j = 0; j < motors[i].length; j++)
                 motors[i][j].setPower(powers[i][j]);
+    }
+
+    private static double getCurrentScaledAngle(BNO055IMU imu) {
+        double angle = imu.getAngularOrientation(AxesReference.INTRINSIC,
+                AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        if (angle < 0)
+            angle += 360;
+        return angle;
     }
 }
