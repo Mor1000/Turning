@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 public class TurnUtilities {
     private static final String TAG = "message";
 
+
     /**
      * @param goalAngle   desired position angle for turning
      * @param driveMotors the robot drivetrain motors
@@ -183,17 +184,19 @@ public class TurnUtilities {
         setMotorPower(driveMotors, new double[][]{{0, 0}, {0, 0}});
     }
 
-    private static void setMotorPower(DcMotor[][] motors, double[][] powers) {
+    public static void setMotorPower(DcMotor[][] motors, double[][] powers) {
         for (int i = 0; i < motors.length; i++)
             for (int j = 0; j < motors[i].length; j++)
                 motors[i][j].setPower(powers[i][j]);
     }
 
-    private static double getCurrentScaledAngle(BNO055IMU imu) {
+    public static double getCurrentScaledAngle(BNO055IMU imu) {
         double angle = imu.getAngularOrientation(AxesReference.INTRINSIC,
                 AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         if (angle < 0)
             angle += 360;
+        if (angle == 360)
+            return 0;
         return angle;
     }
 }
