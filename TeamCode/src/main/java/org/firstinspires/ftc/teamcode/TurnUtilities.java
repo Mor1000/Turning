@@ -195,8 +195,6 @@ public class TurnUtilities {
                 AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         if (angle < 0)
             angle += 360;
-        if (angle == 360)
-            return 0;
         return angle;
     }
 }
