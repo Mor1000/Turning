@@ -184,6 +184,60 @@ public class TurnUtilities {
         setMotorPower(driveMotors, new double[][]{{0, 0}, {0, 0}});
     }
 
+    public static void ScaledTurn2(double goalAngle, DcMotor[][] driveMotors, BNO055IMU imu, double power, Telemetry telemetry) {
+        boolean sideOfTurn = true;
+        double deltaAngle = 0;
+        double currentAngle = getCurrentScaledAngle(imu);
+        double angle0 = currentAngle;
+        if (currentAngle < goalAngle) {
+            if (goalAngle - currentAngle <= 360 - (goalAngle - currentAngle)) {
+                sideOfTurn = false;
+                deltaAngle = goalAngle - currentAngle;
+            } else {
+                sideOfTurn = true;
+                deltaAngle = 360 - (goalAngle - currentAngle);
+            }
+
+
+        } else {
+            if (currentAngle - goalAngle <= 360 - (currentAngle - goalAngle)) {
+                sideOfTurn = true;
+                deltaAngle = currentAngle - goalAngle;
+            } else {
+                sideOfTurn = false;
+                deltaAngle = 360 - (currentAngle - goalAngle);
+            }
+        }
+        if (sideOfTurn)
+            setMotorPower(driveMotors, new double[][]{{power, -power}, {power, -power}});
+        else
+            setMotorPower(driveMotors, new double[][]{{-power, power}, {-power, power}});
+
+        if (goalAngle > 180 && currentAngle < 180)//edge case
+            while ((Math.abs(angle0 - currentAngle) <= deltaAngle) || (currentAngle > 180 && 360 - Math.abs((angle0 - currentAngle)) <= deltaAngle)) {//motors running
+                currentAngle = getCurrentScaledAngle(imu);
+                telemetry.addData("angle case 1:", currentAngle);
+                telemetry.update();
+            }
+
+        else if (goalAngle < 180 && currentAngle > 180) //edge case
+            while ((Math.abs(angle0 - currentAngle) <= deltaAngle) || (currentAngle < 180 && 360 - Math.abs((angle0 - currentAngle)) <= deltaAngle)) {//motors running
+                currentAngle = getCurrentScaledAngle(imu);
+                telemetry.addData("angle case 2:", currentAngle);
+                telemetry.update();
+            }
+
+        else {
+
+            while (Math.abs(angle0 - currentAngle) <= deltaAngle) {  //motors running
+                currentAngle = getCurrentScaledAngle(imu);
+                telemetry.addData("angle case 3:", currentAngle);
+                telemetry.update();
+            }
+        }
+        setMotorPower(driveMotors, new double[][]{{0, 0}, {0, 0}});
+    }
+
     public static void setMotorPower(DcMotor[][] motors, double[][] powers) {
         for (int i = 0; i < motors.length; i++)
             for (int j = 0; j < motors[i].length; j++)
