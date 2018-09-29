@@ -216,20 +216,20 @@ public class TurnUtilities {
         else
             setMotorPower(driveMotors, new double[][]{{-power, power}, {-power, power}});
         if (directTurn)
-            while (Math.abs(angle0 - currentAngle) <= deltaAngle) {  //motors running
+            while (Math.abs(angle0 - currentAngle) < deltaAngle) {  //motors running
                 currentAngle = getCurrentScaledAngle(imu);
                 telemetry.addData("angle case 3:", currentAngle);
                 telemetry.update();
             }
         else if (goalAngle > 180 && currentAngle < 180)
-            while ((Math.abs(angle0 - currentAngle) <= deltaAngle) || (currentAngle > 180 && 360 - Math.abs((angle0 - currentAngle)) <= deltaAngle)) {//motors running
+            while ((Math.abs(angle0 - currentAngle) < deltaAngle) || (currentAngle > 180 && 360 - Math.abs((angle0 - currentAngle)) < deltaAngle)) {//motors running
                 currentAngle = getCurrentScaledAngle(imu);
                 telemetry.addData("angle case 1:", currentAngle);
                 telemetry.update();
             }
 
         else if (goalAngle < 180 && currentAngle > 180)
-            while ((Math.abs(angle0 - currentAngle) <= deltaAngle) || (currentAngle < 180 && 360 - Math.abs((angle0 - currentAngle)) <= deltaAngle)) {//motors running
+            while ((Math.abs(angle0 - currentAngle) < deltaAngle) || (currentAngle < 180 && 360 - Math.abs((angle0 - currentAngle)) < deltaAngle)) {//motors running
                 currentAngle = getCurrentScaledAngle(imu);
                 telemetry.addData("angle case 2:", currentAngle);
                 telemetry.update();
